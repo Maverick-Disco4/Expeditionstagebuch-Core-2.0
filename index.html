@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07150d">
+  <title>Expeditionstagebuch Core 2.0</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<header>
+  <button id="menuBtn" class="icon">☰</button>
+  <div>
+    <h1>Expeditionstagebuch Core 2.0</h1>
+    <p id="subline">Saubere Basis · Build 2026-06-08</p>
+  </div>
+  <button id="installBtn" hidden>Installieren</button>
+</header>
+
+<main>
+  <section id="dashboard" class="view active">
+    <section class="hero card">
+      <span class="kicker">Aktive Expedition</span>
+      <h2 id="dashName">–</h2>
+      <p id="dashMeta">–</p>
+      <div class="progress"><span id="progressBar"></span></div>
+      <div class="metric-grid">
+        <div><strong id="dashStages">0</strong><small>Etappen</small></div>
+        <div><strong id="dashRouteKm">0 km</strong><small>Route</small></div>
+        <div><strong id="dashPois">0</strong><small>POIs</small></div>
+        <div><strong id="dashCost">0 €</strong><small>Kosten</small></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <span class="kicker">Nächste Etappe</span>
+      <h2 id="nextStageTitle">–</h2>
+      <p id="nextStageMeta">–</p>
+      <div class="action-row">
+        <button onclick="showView('planning')">Planung öffnen</button>
+        <button class="secondary" onclick="showView('mapView')">Karte öffnen</button>
+      </div>
+    </section>
+
+    <section class="split">
+      <div class="card">
+        <h3>Journal</h3>
+        <div id="dashJournal">Noch keine Einträge.</div>
+      </div>
+      <div class="card">
+        <h3>Reisekasse</h3>
+        <div id="dashExpenses">Keine Ausgaben.</div>
+      </div>
+    </section>
+  </section>
+
+  <section id="trips" class="view">
+    <section class="card">
+      <h2>Meine Expeditionen</h2>
+      <div class="action-row">
+        <button id="newTripBtn">Neue Expedition</button>
+        <button id="exportAllBtn" class="secondary">Backup exportieren</button>
+      </div>
+      <label class="import">Backup importieren<input id="importAllInput" type="file" accept="application/json"></label>
+      <div id="tripList"></div>
+    </section>
+  </section>
+
+  <section id="planning" class="view">
+    <section class="card">
+      <h2>Planung <span class="badge">Core 2.0</span></h2>
+      <p class="hint">Kein Patch: jede Etappe hat Start, Ziel, Typ und optional eine vereinfachte gespeicherte Route.</p>
+      <div class="route-controls">
+        <select id="routeMode">
+          <option value="osrm">Straßenroute normal</option>
+          <option value="ors-avoid">Straßenroute ohne Autobahn</option>
+          <option value="straight">Luftlinie</option>
+        </select>
+        <input id="orsApiKey" type="password" placeholder="OpenRouteService API-Key optional">
+      </div>
+      <div class="action-row">
+        <button id="addStageBtn">Etappe hinzufügen</button>
+        <button id="buildAllRoutesBtn" class="secondary">Alle Routen berechnen</button>
+      </div>
+      <div id="batchStatus" class="status">Bereit.</div>
+      <div id="stageEditor" hidden></div>
+      <div id="stageList"></div>
+    </section>
+  </section>
+
+  <section id="mapView" class="view">
+    <section class="card map-tools">
+      <div class="action-row">
+        <button id="fitMapBtn">Route einpassen</button>
+        <button id="clearRouteBtn" class="secondary">Routen zurücksetzen</button>
+      </div>
+      <div class="legend"><span class="blue">━ geplant</span><span class="green">━ gefahren</span><span>📍 POI</span></div>
+    </section>
+    <section id="map"></section>
+  </section>
+
+  <section id="journal" class="view">
+    <section class="card">
+      <h2>Journal & POIs</h2>
+      <div class="action-row">
+        <button id="addJournalBtn">Journal-Eintrag</button>
+        <button id="addPoiBtn" class="secondary">POI hinzufügen</button>
+      </div>
+      <div id="journalEditor" hidden></div>
+      <h3>Journal</h3>
+      <div id="journalList"></div>
+      <h3>POIs</h3>
+      <div id="poiList"></div>
+    </section>
+  </section>
+
+  <section id="cash" class="view">
+    <section class="card">
+      <h2>Reisekasse</h2>
+      <form id="expenseForm" class="form-grid">
+        <input id="expenseAmount" type="number" step="0.01" placeholder="Betrag">
+        <select id="expenseCategory">
+          <option>Diesel</option><option>Camping</option><option>Lebensmittel</option><option>Restaurant</option><option>Aktivität</option><option>Eintritt</option><option>Sonstiges</option>
+        </select>
+        <input id="expenseNote" placeholder="Notiz">
+        <button>Speichern</button>
+      </form>
+      <div id="expenseSummary"></div>
+      <div id="expenseList"></div>
+    </section>
+  </section>
+</main>
+
+<nav>
+  <button class="active" data-view="dashboard">⌂<small>Dashboard</small></button>
+  <button data-view="trips">🚙<small>Trips</small></button>
+  <button data-view="planning">☷<small>Planung</small></button>
+  <button class="plus" id="quickAddBtn">＋</button>
+  <button data-view="mapView">▰<small>Karte</small></button>
+  <button data-view="journal">◆<small>Journal</small></button>
+  <button data-view="cash">▤<small>Kasse</small></button>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

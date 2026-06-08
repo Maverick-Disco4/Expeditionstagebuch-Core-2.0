@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 2,
+  "appName": "Expeditionstagebuch Core 2.0",
+  "activeTripId": "frankreich-2026",
+  "settings": {
+    "routeMode": "osrm",
+    "orsApiKey": ""
+  },
+  "trips": [
+    {
+      "id": "frankreich-2026",
+      "name": "Frankreich 2026",
+      "subtitle": "Discovery 4 · Dachzelt · Kajak",
+      "vehicle": "Discovery 4",
+      "startDate": "2026-07-11",
+      "endDate": "2026-08-02",
+      "stages": [
+        {
+          "id": "s01",
+          "type": "drive",
+          "date": "11.07.2026",
+          "title": "Bad Zwischenahn → Morvan",
+          "start": {
+            "name": "Bad Zwischenahn",
+            "lat": 53.183,
+            "lon": 8.0
+          },
+          "end": {
+            "name": "Morvan / Lac des Settons",
+            "lat": 47.466,
+            "lon": 3.747
+          },
+          "plannedKm": 720,
+          "plannedTime": "8:45 h",
+          "overnight": "Lac des Settons / Morvan",
+          "notes": "Lange Anreise, erster Frankreich-Abend.",
+          "route": null
+        },
+        {
+          "id": "s02",
+          "type": "drive",
+          "date": "12.07.2026",
+          "title": "Morvan → Loire",
+          "start": {
+            "name": "Morvan / Lac des Settons",
+            "lat": 47.466,
+            "lon": 3.747
+          },
+          "end": {
+            "name": "Amboise / Loire",
+            "lat": 47.413,
+            "lon": 0.982
+          },
+          "plannedKm": 260,
+          "plannedTime": "4:30 h",
+          "overnight": "Loire / Cher bei Amboise",
+          "notes": "Loire-Ankunft und Schlösserbasis.",
+          "route": null
+        },
+        {
+          "id": "s03",
+          "type": "drive",
+          "date": "13.07.2026",
+          "title": "Loiretal-Rundtag",
+          "start": {
+            "name": "Amboise",
+            "lat": 47.413,
+            "lon": 0.982
+          },
+          "end": {
+            "name": "Chenonceau / Dierre",
+            "lat": 47.3497,
+            "lon": 0.9578
+          },
+          "plannedKm": 120,
+          "plannedTime": "3:00 h",
+          "overnight": "Amboise / Bléré",
+          "notes": "Schlösser, Loiretal und Kajakoption.",
+          "route": null
+        },
+        {
+          "id": "s04",
+          "type": "drive",
+          "date": "14.07.2026",
+          "title": "Loire → Rhône",
+          "start": {
+            "name": "Amboise",
+            "lat": 47.413,
+            "lon": 0.982
+          },
+          "end": {
+            "name": "Tournon-sur-Rhône",
+            "lat": 45.067,
+            "lon": 4.833
+          },
+          "plannedKm": 400,
+          "plannedTime": "6:30 h",
+          "overnight": "Tournon / Rhône",
+          "notes": "Verbindungsetappe nach Süden.",
+          "route": null
+        },
+        {
+          "id": "s05",
+          "type": "drive",
+          "date": "15.07.2026",
+          "title": "Rhône → La Croix-Valmer",
+          "start": {
+            "name": "Tournon-sur-Rhône",
+            "lat": 45.067,
+            "lon": 4.833
+          },
+          "end": {
+            "name": "La Croix-Valmer",
+            "lat": 43.206,
+            "lon": 6.567
+          },
+          "plannedKm": 300,
+          "plannedTime": "5:00 h",
+          "overnight": "Ferienwohnung",
+          "notes": "Ankunft Ferienwohnung.",
+          "route": null
+        },
+        {
+          "id": "s06",
+          "type": "stay",
+          "date": "16.–24.07.2026",
+          "title": "La Croix-Valmer Aufenthalt",
+          "start": {
+            "name": "La Croix-Valmer",
+            "lat": 43.206,
+            "lon": 6.567
+          },
+          "end": {
+            "name": "La Croix-Valmer",
+            "lat": 43.206,
+            "lon": 6.567
+          },
+          "plannedKm": 0,
+          "plannedTime": "–",
+          "overnight": "Ferienwohnung",
+          "notes": "Strand, Küste, Tagesausflüge, Kajak.",
+          "route": null
+        },
+        {
+          "id": "s07",
+          "type": "drive",
+          "date": "25.07.2026",
+          "title": "La Croix-Valmer → Moustiers",
+          "start": {
+            "name": "La Croix-Valmer",
+            "lat": 43.206,
+            "lon": 6.567
+          },
+          "end": {
+            "name": "Moustiers-Sainte-Marie",
+            "lat": 43.846,
+            "lon": 6.221
+          },
+          "plannedKm": 180,
+          "plannedTime": "3:30 h",
+          "overnight": "Moustiers / Lac de Sainte-Croix",
+          "notes": "Provence-Stopp.",
+          "route": null
+        },
+        {
+          "id": "s08",
+          "type": "drive",
+          "date": "26.07.2026",
+          "title": "Moustiers → Auvergne",
+          "start": {
+            "name": "Moustiers-Sainte-Marie",
+            "lat": 43.846,
+            "lon": 6.221
+          },
+          "end": {
+            "name": "Lac Chambon / Murol",
+            "lat": 45.571,
+            "lon": 2.897
+          },
+          "plannedKm": 380,
+          "plannedTime": "6:45 h",
+          "overnight": "Lac Chambon / Murol",
+          "notes": "Vulkanland und See.",
+          "route": null
+        },
+        {
+          "id": "s09",
+          "type": "drive",
+          "date": "28.07.2026",
+          "title": "Auvergne → Tarn",
+          "start": {
+            "name": "Lac Chambon / Murol",
+            "lat": 45.571,
+            "lon": 2.897
+          },
+          "end": {
+            "name": "Sainte-Enimie / Gorges du Tarn",
+            "lat": 44.365,
+            "lon": 3.412
+          },
+          "plannedKm": 210,
+          "plannedTime": "4:15 h",
+          "overnight": "Gorges du Tarn",
+          "notes": "Schlucht und Kajak.",
+          "route": null
+        },
+        {
+          "id": "s10",
+          "type": "drive",
+          "date": "30.07.2026",
+          "title": "Tarn → Lot",
+          "start": {
+            "name": "Sainte-Enimie",
+            "lat": 44.365,
+            "lon": 3.412
+          },
+          "end": {
+            "name": "Saint-Cirq-Lapopie",
+            "lat": 44.465,
+            "lon": 1.671
+          },
+          "plannedKm": 190,
+          "plannedTime": "4:00 h",
+          "overnight": "Lot / Bouziès",
+          "notes": "Lot-Tal.",
+          "route": null
+        },
+        {
+          "id": "s11",
+          "type": "drive",
+          "date": "31.07.2026",
+          "title": "Lot → Dordogne",
+          "start": {
+            "name": "Saint-Cirq-Lapopie",
+            "lat": 44.465,
+            "lon": 1.671
+          },
+          "end": {
+            "name": "Sarlat-la-Canéda",
+            "lat": 44.89,
+            "lon": 1.216
+          },
+          "plannedKm": 110,
+          "plannedTime": "2:30 h",
+          "overnight": "Dordogne / Sarlat",
+          "notes": "Burgen und Dordogne-Kajak.",
+          "route": null
+        },
+        {
+          "id": "s12",
+          "type": "drive",
+          "date": "01.08.2026",
+          "title": "Dordogne → Perche",
+          "start": {
+            "name": "Sarlat-la-Canéda",
+            "lat": 44.89,
+            "lon": 1.216
+          },
+          "end": {
+            "name": "Bellême / Perche",
+            "lat": 48.379,
+            "lon": 0.57
+          },
+          "plannedKm": 480,
+          "plannedTime": "7:00 h",
+          "overnight": "Perche / Bellême",
+          "notes": "Richtung Norden.",
+          "route": null
+        },
+        {
+          "id": "s13",
+          "type": "drive",
+          "date": "02.08.2026",
+          "title": "Perche → Bad Zwischenahn",
+          "start": {
+            "name": "Bellême / Perche",
+            "lat": 48.379,
+            "lon": 0.57
+          },
+          "end": {
+            "name": "Bad Zwischenahn",
+            "lat": 53.183,
+            "lon": 8.0
+          },
+          "plannedKm": 650,
+          "plannedTime": "7:45 h",
+          "overnight": "Zuhause",
+          "notes": "Heimfahrt.",
+          "route": null
+        }
+      ],
+      "pois": [],
+      "journal": [],
+      "expenses": [],
+      "tracks": []
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Expeditionstagebuch Core 2.0",
+  "short_name": "Expedition 2.0",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07110d",
+  "theme_color": "#07110d",
+  "icons": []
+}
