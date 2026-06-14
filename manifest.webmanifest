@@ -1,6 +1,6 @@
 {
-  "name": "Expeditionstagebuch Core 2.1",
-  "short_name": "Expedition 2.1",
+  "name": "Expeditionstagebuch Core 2.1a",
+  "short_name": "Expedition 2.1a",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

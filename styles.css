@@ -28,3 +28,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 .track-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .track-actions button{padding:8px 10px;font-size:13px}
 @media(max-width:760px){.gps-grid{grid-template-columns:1fr 1fr}nav button small{font-size:9px}}
+
+/* Core 2.1a GPS layout fix */
+.gps-grid{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:10px}
+.gps-grid div{display:block}
