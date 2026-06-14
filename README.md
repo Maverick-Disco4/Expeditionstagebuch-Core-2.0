@@ -20,3 +20,12 @@ Neu aufgebaut, nicht als Patch.
 
 ## Wichtige Designentscheidung
 Routen werden vereinfacht gespeichert. Keine vollständigen Langstrecken-Geometrien mehr im lokalen Speicher.
+
+## Core 2.1 – GPS & Tracking
+- Eigene GPS-Rubrik
+- GPS starten, pausieren, fortsetzen, speichern
+- Live-Track grün auf der Expeditionskarte
+- aktuelle Position als Discovery-Marker
+- gespeicherte Tracks dauerhaft pro Expedition
+- Wake Lock während aktivem Tracking
+- GPX-Export pro Track

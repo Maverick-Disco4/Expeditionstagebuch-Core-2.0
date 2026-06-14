@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#07150d">
-  <title>Expeditionstagebuch Core 2.0</title>
+  <title>Expeditionstagebuch Core 2.1</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -13,8 +13,8 @@
 <header>
   <button id="menuBtn" class="icon">☰</button>
   <div>
-    <h1>Expeditionstagebuch Core 2.0</h1>
-    <p id="subline">Saubere Basis · Build 2026-06-08</p>
+    <h1>Expeditionstagebuch Core 2.1</h1>
+    <p id="subline">GPS & Expeditionskarte · Build 2026-06-09</p>
   </div>
   <button id="installBtn" hidden>Installieren</button>
 </header>
@@ -96,7 +96,7 @@
         <button id="fitMapBtn">Route einpassen</button>
         <button id="clearRouteBtn" class="secondary">Routen zurücksetzen</button>
       </div>
-      <div class="legend"><span class="blue">━ geplant</span><span class="green">━ gefahren</span><span>📍 POI</span></div>
+      <div class="legend"><span class="blue">━ geplant</span><span class="green">━ gefahren</span><span>🚙 live</span><span>📍 POI</span></div>
     </section>
     <section id="map"></section>
   </section>
@@ -113,6 +113,24 @@
       <div id="journalList"></div>
       <h3>POIs</h3>
       <div id="poiList"></div>
+    </section>
+  </section>
+
+
+  <section id="gps" class="view">
+    <section class="card">
+      <h2>GPS & Tracking <span class="badge">Core 2.1</span></h2>
+      <div id="gpsStatus" class="status">GPS bereit.</div>
+      <div class="gps-grid">
+        <div><strong id="gpsKm">0.00 km</strong><small>aktueller Track</small></div>
+        <div><strong id="gpsTime">0:00 h</strong><small>Fahrzeit</small></div>
+        <div><strong id="gpsPoints">0</strong><small>Punkte</small></div>
+        <div><strong id="wakeLockState">Display: bereit</strong><small>Wake Lock</small></div>
+      </div>
+      <div class="action-row"><button id="gpsStartBtn">GPS starten</button><button id="gpsPauseBtn" class="secondary">Pausieren</button></div>
+      <div class="action-row"><button id="gpsResumeBtn" class="secondary">Fortsetzen</button><button id="gpsFinishBtn" class="secondary">Track speichern</button></div>
+      <div class="action-row"><button id="gpsOpenMapBtn">Live-Karte öffnen</button><button id="gpxExportBtn" class="secondary">GPX exportieren</button></div>
+      <h3>Gespeicherte Tracks</h3><div id="trackList"></div>
     </section>
   </section>
 
@@ -140,6 +158,7 @@
   <button class="plus" id="quickAddBtn">＋</button>
   <button data-view="mapView">▰<small>Karte</small></button>
   <button data-view="journal">◆<small>Journal</small></button>
+  <button data-view="gps">◎<small>GPS</small></button>
   <button data-view="cash">▤<small>Kasse</small></button>
 </nav>
 
