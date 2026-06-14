@@ -284,7 +284,7 @@ async function registerSW(){if("serviceWorker"in navigator)navigator.serviceWork
 let deferredPrompt;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").hidden=false;});$("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;$("installBtn").hidden=true;}};
 window.addEventListener("resize",()=>{setTimeout(()=>{Object.values(stageMaps).forEach(m=>{try{m.invalidateSize(true)}catch(e){}});if(map)map.invalidateSize(true);},250);});
 
-/* ===== Core 2.1a GPS & Tracking ===== */
+/* ===== Core 2.2 GPS & Tracking ===== */
 let gpsWatchId=null,wakeLock=null,liveTrackLayer=null,liveMarker=null,savedTrackLayer=null,followLive=true;
 let gpsState={active:false,paused:false,startedAt:null,elapsedBeforePause:0,points:[]};
 function gpsDistanceKm(points){let sum=0;for(let i=1;i<points.length;i++)sum+=distM({lat:points[i-1].lat,lon:points[i-1].lon},{lat:points[i].lat,lon:points[i].lon})/1000;return sum;}
@@ -308,10 +308,26 @@ function drawSavedTracks(){if(!map)return;if(savedTrackLayer){try{map.removeLaye
 const oldDrawMainMap=drawMainMap;drawMainMap=function(){oldDrawMainMap();drawSavedTracks();drawLiveTrack();};
 function showTrackOnMap(id){showView("mapView");setTimeout(()=>{const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(t?.points?.length&&map)map.fitBounds(L.latLngBounds(t.points.map(p=>[p.lat,p.lon])),{padding:[30,30]});},300);}
 function deleteTrack(id){if(confirm("Track löschen?")){activeTrip.tracks=(activeTrip.tracks||[]).filter(t=>t.id!==id);save();renderGps();drawMainMap();}}
-function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.1a" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
+function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.2" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
 function exportLatestGpx(){const t=(activeTrip.tracks||[]).at(-1);if(!t)return alert("Noch kein gespeicherter Track vorhanden.");exportTrackGpx(t.id);}
 const oldBindCore21=bind;bind=function(){oldBindCore21();$("gpsStartBtn").onclick=gpsStart;$("gpsPauseBtn").onclick=gpsPause;$("gpsResumeBtn").onclick=gpsResume;$("gpsFinishBtn").onclick=gpsFinish;$("gpsOpenMapBtn").onclick=()=>showView("mapView");$("gpxExportBtn").onclick=exportLatestGpx;};
 const oldRenderAllCore21=renderAll;renderAll=function(){oldRenderAllCore21();renderGps();};
 setInterval(()=>{const g=document.getElementById("gps");if(g&&g.classList.contains("active"))renderGps();},1000);
+
+
+/* ===== Core 2.2 GPS praxis/debug layer ===== */
+let gpsLastPointCore22=null;
+function core22SetStatus(text,cls=""){const el=document.getElementById("gpsStatus");if(!el)return;el.textContent=text;el.className="status "+cls;}
+function core22DebugText(){const tracks=activeTrip?.tracks?.length||0;const active=gpsState?.active?"aktiv":(gpsState?.paused?"pausiert":"bereit");if(!gpsLastPointCore22)return `Status: <strong>${active}</strong><br>Letzter Punkt: –<br>Gespeicherte Tracks: <strong>${tracks}</strong>`;const p=gpsLastPointCore22;return `Status: <strong>${active}</strong><br>Letzter Punkt: <strong>${Number(p.lat).toFixed(6)}, ${Number(p.lon).toFixed(6)}</strong><br>Genauigkeit: <strong>±${Math.round(p.acc||0)} m</strong> · Zeit: <strong>${new Date(p.time).toLocaleTimeString("de-DE")}</strong><br>Gespeicherte Tracks: <strong>${tracks}</strong>`;}
+function core22RenderDebug(){const el=document.getElementById("gpsDebug");if(el)el.innerHTML=core22DebugText();}
+const oldRenderGpsCore22=typeof renderGps==="function"?renderGps:null;if(oldRenderGpsCore22){renderGps=function(){oldRenderGpsCore22();core22RenderDebug();};}
+const oldGpsStartCore22=typeof gpsStart==="function"?gpsStart:null;if(oldGpsStartCore22){gpsStart=function(){core22SetStatus("GPS wird gestartet …","warn");oldGpsStartCore22();setTimeout(core22RenderDebug,300);};}
+const oldGpsPauseCore22=typeof gpsPause==="function"?gpsPause:null;if(oldGpsPauseCore22){gpsPause=function(){oldGpsPauseCore22();core22SetStatus("GPS pausiert.","warn");core22RenderDebug();};}
+const oldGpsResumeCore22=typeof gpsResume==="function"?gpsResume:null;if(oldGpsResumeCore22){gpsResume=function(){core22SetStatus("GPS wird fortgesetzt …","warn");oldGpsResumeCore22();setTimeout(core22RenderDebug,300);};}
+const oldGpsFinishCore22=typeof gpsFinish==="function"?gpsFinish:null;if(oldGpsFinishCore22){gpsFinish=function(){const before=activeTrip?.tracks?.length||0;oldGpsFinishCore22();const after=activeTrip?.tracks?.length||0;if(after>before)core22SetStatus("Track gespeichert und in der Liste abgelegt.","ok");else core22SetStatus("Kein Track gespeichert: zu wenige GPS-Punkte.","warn");core22RenderDebug();};}
+const oldGpsPositionCore22=typeof gpsPosition==="function"?gpsPosition:null;if(oldGpsPositionCore22){gpsPosition=function(pos){gpsLastPointCore22={lat:pos.coords.latitude,lon:pos.coords.longitude,acc:pos.coords.accuracy,time:new Date().toISOString()};oldGpsPositionCore22(pos);core22SetStatus(`GPS aktiv · Genauigkeit ca. ${Math.round(pos.coords.accuracy||0)} m`,"ok");core22RenderDebug();};}
+const oldGpsErrorCore22=typeof gpsError==="function"?gpsError:null;if(oldGpsErrorCore22){gpsError=function(err){oldGpsErrorCore22(err);core22SetStatus("GPS-Fehler: "+err.message,"err");core22RenderDebug();};}
+const oldRenderTracksCore22=typeof renderTracks==="function"?renderTracks:null;if(oldRenderTracksCore22){renderTracks=function(){oldRenderTracksCore22();core22RenderDebug();};}
+setInterval(core22RenderDebug,1500);
 
 init();

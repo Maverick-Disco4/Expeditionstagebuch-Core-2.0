@@ -21,7 +21,7 @@ Neu aufgebaut, nicht als Patch.
 ## Wichtige Designentscheidung
 Routen werden vereinfacht gespeichert. Keine vollständigen Langstrecken-Geometrien mehr im lokalen Speicher.
 
-## Core 2.1a – GPS & Tracking
+## Core 2.2 – GPS & Tracking
 - Eigene GPS-Rubrik
 - GPS starten, pausieren, fortsetzen, speichern
 - Live-Track grün auf der Expeditionskarte
@@ -29,3 +29,10 @@ Routen werden vereinfacht gespeichert. Keine vollständigen Langstrecken-Geometr
 - gespeicherte Tracks dauerhaft pro Expedition
 - Wake Lock während aktivem Tracking
 - GPX-Export pro Track
+
+## Core 2.2 – GPS Praxistest
+- GPS-Status klarer markiert: bereit, aktiv, pausiert, Fehler.
+- Debug-Zeile mit letztem GPS-Punkt, Genauigkeit und Zeit.
+- Track-Speicherung zeigt klar, ob gespeichert wurde.
+- Track-Zähler im GPS-Bereich.
+- Keine neuen Großmodule.

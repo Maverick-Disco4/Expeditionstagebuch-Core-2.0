@@ -32,3 +32,8 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 /* Core 2.1a GPS layout fix */
 .gps-grid{display:grid !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:10px}
 .gps-grid div{display:block}
+
+/* Core 2.2 GPS praxis/debug */
+.gps-debug{margin:8px 0 10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#08130d;color:var(--muted);font-size:13px;line-height:1.45}
+.gps-debug strong{color:var(--text)}
+.status.ok{color:#7df08f}.status.warn{color:#ffd27a}.status.err{color:#ffb6b6}
