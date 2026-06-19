@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "appName": "Expeditionstagebuch Core 2.3",
+  "appName": "Expeditionstagebuch Core 2.7",
   "activeTripId": "frankreich-2026",
   "settings": {
     "routeMode": "osrm",

@@ -284,7 +284,7 @@ async function registerSW(){if("serviceWorker"in navigator)navigator.serviceWork
 let deferredPrompt;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").hidden=false;});$("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;$("installBtn").hidden=true;}};
 window.addEventListener("resize",()=>{setTimeout(()=>{Object.values(stageMaps).forEach(m=>{try{m.invalidateSize(true)}catch(e){}});if(map)map.invalidateSize(true);},250);});
 
-/* ===== Core 2.3 GPS & Tracking ===== */
+/* ===== Core 2.7 GPS & Tracking ===== */
 let gpsWatchId=null,wakeLock=null,liveTrackLayer=null,liveMarker=null,savedTrackLayer=null,followLive=true;
 let gpsState={active:false,paused:false,startedAt:null,elapsedBeforePause:0,points:[]};
 function gpsDistanceKm(points){let sum=0;for(let i=1;i<points.length;i++)sum+=distM({lat:points[i-1].lat,lon:points[i-1].lon},{lat:points[i].lat,lon:points[i].lon})/1000;return sum;}
@@ -308,14 +308,14 @@ function drawSavedTracks(){if(!map)return;if(savedTrackLayer){try{map.removeLaye
 const oldDrawMainMap=drawMainMap;drawMainMap=function(){oldDrawMainMap();drawSavedTracks();drawLiveTrack();};
 function showTrackOnMap(id){showView("mapView");setTimeout(()=>{const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(t?.points?.length&&map)map.fitBounds(L.latLngBounds(t.points.map(p=>[p.lat,p.lon])),{padding:[30,30]});},300);}
 function deleteTrack(id){if(confirm("Track löschen?")){activeTrip.tracks=(activeTrip.tracks||[]).filter(t=>t.id!==id);save();renderGps();drawMainMap();}}
-function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.3" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
+function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.7" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
 function exportLatestGpx(){const t=(activeTrip.tracks||[]).at(-1);if(!t)return alert("Noch kein gespeicherter Track vorhanden.");exportTrackGpx(t.id);}
 const oldBindCore21=bind;bind=function(){oldBindCore21();$("gpsStartBtn").onclick=gpsStart;$("gpsPauseBtn").onclick=gpsPause;$("gpsResumeBtn").onclick=gpsResume;$("gpsFinishBtn").onclick=gpsFinish;$("gpsOpenMapBtn").onclick=()=>showView("mapView");$("gpxExportBtn").onclick=exportLatestGpx;};
 const oldRenderAllCore21=renderAll;renderAll=function(){oldRenderAllCore21();renderGps();};
 setInterval(()=>{const g=document.getElementById("gps");if(g&&g.classList.contains("active"))renderGps();},1000);
 
 
-/* ===== Core 2.3 GPS praxis/debug layer ===== */
+/* ===== Core 2.7 GPS praxis/debug layer ===== */
 let gpsLastPointCore22=null;
 function core22SetStatus(text,cls=""){const el=document.getElementById("gpsStatus");if(!el)return;el.textContent=text;el.className="status "+cls;}
 function core22DebugText(){const tracks=activeTrip?.tracks?.length||0;const active=gpsState?.active?"aktiv":(gpsState?.paused?"pausiert":"bereit");if(!gpsLastPointCore22)return `Status: <strong>${active}</strong><br>Letzter Punkt: –<br>Gespeicherte Tracks: <strong>${tracks}</strong>`;const p=gpsLastPointCore22;return `Status: <strong>${active}</strong><br>Letzter Punkt: <strong>${Number(p.lat).toFixed(6)}, ${Number(p.lon).toFixed(6)}</strong><br>Genauigkeit: <strong>±${Math.round(p.acc||0)} m</strong> · Zeit: <strong>${new Date(p.time).toLocaleTimeString("de-DE")}</strong><br>Gespeicherte Tracks: <strong>${tracks}</strong>`;}
@@ -331,7 +331,7 @@ const oldRenderTracksCore22=typeof renderTracks==="function"?renderTracks:null;i
 setInterval(core22RenderDebug,1500);
 
 
-/* ===== Core 2.3: camera + gallery photos for Journal and POI ===== */
+/* ===== Core 2.7: camera + gallery photos for Journal and POI ===== */
 let core23PhotoTarget = null;
 
 function core23PhotoStore(){
@@ -430,5 +430,200 @@ setTimeout(()=>{
   });
   renderJournal();
 },800);
+
+
+
+/* ===== Core 2.7: expedition map, map POIs, chronology, search links ===== */
+const core27Layers = {planned:true, tracks:true, pois:true, live:true};
+let core27RouteLayer = null;
+let core27PoiLayer = null;
+let core27TrackLayer = null;
+let core27LiveLayer = null;
+let core27LongPressTimer = null;
+
+function core27PoiIcon(category="POI", hasPhotos=false){
+  const c = (category || "").toLowerCase();
+  let icon = "📍";
+  if(c.includes("camp")) icon = "🏕️";
+  else if(c.includes("kajak") || c.includes("kanu")) icon = "🚣";
+  else if(c.includes("diesel") || c.includes("tank")) icon = "⛽";
+  else if(c.includes("foto") || c.includes("aussicht")) icon = "📸";
+  else if(c.includes("restaurant") || c.includes("essen")) icon = "🍽️";
+  else if(c.includes("geheim")) icon = "⭐";
+  if(hasPhotos) icon = "📸";
+  return L.divIcon({html:`<div class="poi-icon">${icon}</div>`,className:"",iconSize:[28,28],iconAnchor:[14,24]});
+}
+function core27AttachLayerControls(){
+  const bindings = [
+    ["layerPlanned","planned"],["layerTracks","tracks"],["layerPois","pois"],["layerLive","live"]
+  ];
+  bindings.forEach(([id,key])=>{
+    const el=$(id);
+    if(el && !el.__core27){
+      el.__core27=true;
+      el.checked=core27Layers[key];
+      el.onchange=()=>{core27Layers[key]=el.checked; drawMainMap();};
+    }
+  });
+  const bindBtn=(id,fn)=>{const el=$(id); if(el && !el.__core27){el.__core27=true;el.onclick=fn;}};
+  bindBtn("mapMyPositionBtn",core27MapMyPosition);
+  bindBtn("mapCurrentStageBtn",core27FitCurrentStage);
+  bindBtn("searchPark4NightBtn",()=>core27Search("park4night"));
+  bindBtn("searchCampspaceBtn",()=>core27Search("campspace"));
+  bindBtn("searchSupermarketBtn",()=>core27Search("supermarket"));
+  bindBtn("searchBakeryBtn",()=>core27Search("bakery"));
+  bindBtn("searchFuelBtn",()=>core27Search("fuel"));
+  bindBtn("searchFoodBtn",()=>core27Search("restaurant"));
+}
+function core27ClearLayer(layer){
+  if(layer && map){try{map.removeLayer(layer);}catch(e){}}
+}
+function drawMainMap(){
+  if(!map) return;
+  core27AttachLayerControls();
+  core27ClearLayer(core27RouteLayer);
+  core27ClearLayer(core27PoiLayer);
+  core27ClearLayer(core27TrackLayer);
+  core27ClearLayer(core27LiveLayer);
+  if(typeof savedTrackLayer !== "undefined" && savedTrackLayer){try{map.removeLayer(savedTrackLayer);}catch(e){} savedTrackLayer=null;}
+  if(typeof liveTrackLayer !== "undefined" && liveTrackLayer){try{map.removeLayer(liveTrackLayer);}catch(e){} liveTrackLayer=null;}
+  if(typeof liveMarker !== "undefined" && liveMarker){try{map.removeLayer(liveMarker);}catch(e){} liveMarker=null;}
+
+  const routeItems = [];
+  if(core27Layers.planned){
+    activeTrip.stages.forEach((s,idx)=>{
+      if(s.route?.coords?.length){
+        routeItems.push(L.polyline(s.route.coords.map(c=>[c[1],c[0]]),{color:"#4e9cff",weight:4,opacity:.95}).bindPopup(`${idx+1}. ${esc(s.title)}`));
+      }else if(hasCoords(s.start)&&hasCoords(s.end)&&s.type!=="stay"){
+        routeItems.push(L.polyline([[s.start.lat,s.start.lon],[s.end.lat,s.end.lon]],{color:"#4e9cff",weight:3,opacity:.4,dashArray:"6 6"}).bindPopup(`${idx+1}. ${esc(s.title)} · Luftlinie`));
+      }
+      if(hasCoords(s.start)) routeItems.push(L.circleMarker([s.start.lat,s.start.lon],{radius:4,color:"#4e9cff"}).bindPopup(esc(s.start.name)));
+      if(hasCoords(s.end)) routeItems.push(L.circleMarker([s.end.lat,s.end.lon],{radius:4,color:"#4e9cff"}).bindPopup(esc(s.end.name)));
+    });
+  }
+  core27RouteLayer = L.layerGroup(routeItems).addTo(map);
+
+  if(core27Layers.tracks){
+    const trackLines=(activeTrip.tracks||[]).filter(t=>t.points?.length>1).map(t=>L.polyline(t.points.map(p=>[p.lat,p.lon]),{color:"#63db78",weight:4,opacity:.8}).bindPopup(`${esc(t.name||"Track")}<br>${Number(t.km||0).toFixed(2)} km`));
+    core27TrackLayer = L.layerGroup(trackLines).addTo(map);
+  }
+
+  if(core27Layers.pois){
+    const poiMarkers=(activeTrip.pois||[]).filter(p=>hasCoords(p)).map(p=>L.marker([p.lat,p.lon],{icon:core27PoiIcon(p.category,(p.photoIds||[]).length>0)}).bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(p.category||"POI")}<br>${esc(p.note||"")}`));
+    core27PoiLayer = L.layerGroup(poiMarkers).addTo(map);
+  }
+
+  if(core27Layers.live && typeof gpsState !== "undefined"){
+    const pts=(gpsState.points||[]).map(p=>[p.lat,p.lon]);
+    const liveItems=[];
+    if(pts.length>=2) liveItems.push(L.polyline(pts,{color:"#22b83f",weight:5,opacity:.95}));
+    if(pts.length>=1){
+      const icon = typeof liveIcon === "function" ? liveIcon() : undefined;
+      liveItems.push(L.marker(pts.at(-1), icon?{icon}:{}).bindPopup("🚙 Aktuelle Position"));
+    }
+    core27LiveLayer = L.layerGroup(liveItems).addTo(map);
+  }
+}
+function fitMainMap(){
+  if(!map)return;
+  const pts=[];
+  activeTrip.stages.forEach(s=>{
+    if(hasCoords(s.start))pts.push([s.start.lat,s.start.lon]);
+    if(hasCoords(s.end))pts.push([s.end.lat,s.end.lon]);
+    if(s.route?.coords?.length) s.route.coords.forEach(c=>pts.push([c[1],c[0]]));
+  });
+  (activeTrip.tracks||[]).forEach(t=>(t.points||[]).forEach(p=>pts.push([p.lat,p.lon])));
+  (activeTrip.pois||[]).forEach(p=>{if(hasCoords(p))pts.push([p.lat,p.lon]);});
+  if(pts.length) map.fitBounds(pts,{padding:[30,30]});
+}
+function core27MapMyPosition(){
+  const p = (typeof gpsState !== "undefined" && gpsState.points?.length) ? gpsState.points.at(-1) : null;
+  if(p && map) map.setView([p.lat,p.lon],16);
+  else alert("Noch keine Live-Position verfügbar.");
+}
+function core27CurrentStage(){
+  return activeTrip.stages.find(s=>!s.route&&s.type!=="stay") || activeTrip.stages[0];
+}
+function core27FitCurrentStage(){
+  const s=core27CurrentStage();
+  if(!s||!map)return;
+  if(s.route?.coords?.length) map.fitBounds(L.latLngBounds(s.route.coords.map(c=>[c[1],c[0]])),{padding:[30,30]});
+  else if(hasCoords(s.start)&&hasCoords(s.end)) map.fitBounds([[s.start.lat,s.start.lon],[s.end.lat,s.end.lon]],{padding:[30,30]});
+}
+function core27Search(type){
+  const p = (typeof gpsState !== "undefined" && gpsState.points?.length) ? gpsState.points.at(-1) : null;
+  const stage=core27CurrentStage();
+  const lat = p?.lat || stage?.start?.lat || 46;
+  const lon = p?.lon || stage?.start?.lon || 3;
+  let url = "";
+  if(type==="park4night") url = `https://park4night.com/en/search?lat=${lat}&lng=${lon}&z=10`;
+  else if(type==="campspace") url = `https://campspace.com/en/s?lat=${lat}&lng=${lon}`;
+  else {
+    const q = {supermarket:"supermarket",bakery:"bakery",fuel:"gas station",restaurant:"restaurant"}[type] || type;
+    url = `https://www.google.com/maps/search/${encodeURIComponent(q)}/@${lat},${lon},12z`;
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+function core27InstallLongPressPoi(){
+  if(!map || map.__core27LongPress) return;
+  map.__core27LongPress=true;
+  const start=e=>{
+    core27LongPressTimer=setTimeout(()=>core27CreatePoiAt(e.latlng),750);
+  };
+  const cancel=()=>{if(core27LongPressTimer)clearTimeout(core27LongPressTimer);core27LongPressTimer=null;};
+  map.on("mousedown",start); map.on("touchstart",start);
+  map.on("mouseup",cancel); map.on("touchend",cancel); map.on("move",cancel);
+}
+function core27CreatePoiAt(latlng){
+  const name=prompt("POI Name?");
+  if(!name)return;
+  const category=prompt("Kategorie: Camping, Kajak, Diesel, Fotospot, Restaurant, Geheimtipp", "Geheimtipp") || "POI";
+  const note=prompt("Notiz", "") || "";
+  activeTrip.pois ||= [];
+  activeTrip.pois.push({id:uid("poi"),name,category,note,lat:latlng.lat,lon:latlng.lng,photoIds:[]});
+  save();
+  renderAll();
+  drawMainMap();
+}
+const oldInitMainMapCore27 = typeof initMainMap === "function" ? initMainMap : null;
+if(oldInitMainMapCore27){
+  initMainMap=function(){
+    oldInitMainMapCore27();
+    setTimeout(()=>{core27AttachLayerControls();core27InstallLongPressPoi();drawMainMap();},250);
+  };
+}
+const oldShowViewCore27 = typeof showView === "function" ? showView : null;
+if(oldShowViewCore27){
+  showView=function(id){
+    oldShowViewCore27(id);
+    if(id==="mapView") setTimeout(()=>{core27AttachLayerControls();core27InstallLongPressPoi();drawMainMap();},350);
+  };
+  window.showView=showView;
+}
+const oldRenderJournalCore27 = typeof renderJournal === "function" ? renderJournal : null;
+renderJournal=function(){
+  if(oldRenderJournalCore27) oldRenderJournalCore27();
+  renderChronology();
+};
+function renderChronology(){
+  const el=$("chronologyList"); if(!el)return;
+  const byDate={};
+  const add=(date,row)=>{date=date||"ohne Datum";byDate[date]||=[];byDate[date].push(row);};
+  (activeTrip.tracks||[]).forEach(t=>add(t.date,`🟩 Track: ${Number(t.km||0).toFixed(1)} km · ${fmtDuration ? fmtDuration(t.ms||0) : ""}`));
+  (activeTrip.pois||[]).forEach(p=>add(p.date||today(),`📍 ${esc(p.name)} · ${esc(p.category||"POI")}`));
+  (activeTrip.journal||[]).forEach(j=>add(j.date,`📝 ${esc(j.title)} ${(j.photoIds||[]).length?`· 📷 ${(j.photoIds||[]).length}`:""}`));
+  (activeTrip.expenses||[]).forEach(e=>add(e.date,`💶 ${esc(e.category)} · ${money(e.amount)}`));
+  const dates=Object.keys(byDate).sort().reverse();
+  el.innerHTML = dates.length ? dates.map(d=>`<div class="chrono-day"><h4>${esc(d)}</h4>${byDate[d].map(r=>`<div class="chrono-row">${r}</div>`).join("")}</div>`).join("") : "<p>Noch keine Chronikdaten.</p>";
+}
+const oldRenderAllCore27 = typeof renderAll === "function" ? renderAll : null;
+if(oldRenderAllCore27){
+  renderAll=function(){
+    oldRenderAllCore27();
+    renderChronology();
+    if(map) setTimeout(drawMainMap,100);
+  };
+}
+setTimeout(()=>{core27AttachLayerControls();renderChronology();if(map){core27InstallLongPressPoi();drawMainMap();}},1000);
 
 init();

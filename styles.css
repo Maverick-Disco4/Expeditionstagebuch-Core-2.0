@@ -45,3 +45,15 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 .photo-preview img,.photo-grid img{width:100%;aspect-ratio:1;border-radius:10px;object-fit:cover;border:1px solid var(--line)}
 .photo-count{display:inline-block;color:var(--muted);font-size:13px;margin-top:4px}
 @media(max-width:760px){.photo-actions{grid-template-columns:1fr}.photo-preview{grid-template-columns:repeat(2,1fr)}}
+
+/* Core 2.7 Expedition map, POI map, chronology, search */
+.layer-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0;color:var(--muted);font-size:13px}
+.layer-controls label{background:#08130d;border:1px solid var(--line);border-radius:12px;padding:9px}
+.search-panel{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#08130d}
+.search-panel h3{margin:0 0 4px}
+.search-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.poi-icon{font-size:24px;text-shadow:0 1px 3px #000}
+.chrono-day{border-bottom:1px solid var(--line);padding:12px 0}
+.chrono-day h4{margin:0 0 6px;color:var(--text)}
+.chrono-row{color:var(--muted);font-size:14px;margin:3px 0}
+@media(max-width:760px){.layer-controls,.search-grid{grid-template-columns:1fr 1fr}}

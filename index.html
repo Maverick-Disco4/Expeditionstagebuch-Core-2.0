@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#07150d">
-  <title>Expeditionstagebuch Core 2.3</title>
+  <title>Expeditionstagebuch Core 2.7</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -13,7 +13,7 @@
 <header>
   <button id="menuBtn" class="icon">☰</button>
   <div>
-    <h1>Expeditionstagebuch Core 2.3</h1>
+    <h1>Expeditionstagebuch Core 2.7</h1>
     <p id="subline">GPS & Expeditionskarte · Build 2026-06-09</p>
   </div>
   <button id="installBtn" hidden>Installieren</button>
@@ -70,7 +70,7 @@
 
   <section id="planning" class="view">
     <section class="card">
-      <h2>Planung <span class="badge">Core 2.0</span></h2>
+      <h2>Planung <span class="badge">Core 2.7</span></h2>
       <p class="hint">Kein Patch: jede Etappe hat Start, Ziel, Typ und optional eine vereinfachte gespeicherte Route.</p>
       <div class="route-controls">
         <select id="routeMode">
@@ -96,7 +96,29 @@
         <button id="fitMapBtn">Route einpassen</button>
         <button id="clearRouteBtn" class="secondary">Routen zurücksetzen</button>
       </div>
-      <div class="legend"><span class="blue">━ geplant</span><span class="green">━ gefahren</span><span>🚙 live</span><span>📍 POI</span></div>
+      <div class="legend"><span class="blue">━ geplant</span><span class="green">━ gefahren</span><span>🚙 live</span><span>📍 POI</span><span>📸 Fotos</span></div>
+      <div id="mapLayerControls" class="layer-controls">
+        <label><input type="checkbox" id="layerPlanned" checked> geplante Route</label>
+        <label><input type="checkbox" id="layerTracks" checked> gefahrene Tracks</label>
+        <label><input type="checkbox" id="layerPois" checked> POIs</label>
+        <label><input type="checkbox" id="layerLive" checked> Live-Position</label>
+      </div>
+      <div class="action-row">
+        <button id="mapMyPositionBtn" class="secondary">Auf Position</button>
+        <button id="mapCurrentStageBtn" class="secondary">Aktive Etappe</button>
+      </div>
+      <div class="search-panel">
+        <h3>Routensuche</h3>
+        <p class="hint">Öffnet externe Dienste in der Region der aktuellen Position oder Etappe.</p>
+        <div class="search-grid">
+          <button id="searchPark4NightBtn">Park4Night</button>
+          <button id="searchCampspaceBtn">Campspace</button>
+          <button id="searchSupermarketBtn" class="secondary">Supermarkt</button>
+          <button id="searchBakeryBtn" class="secondary">Bäckerei</button>
+          <button id="searchFuelBtn" class="secondary">Tankstelle</button>
+          <button id="searchFoodBtn" class="secondary">Restaurant</button>
+        </div>
+      </div>
     </section>
     <section id="map"></section>
   </section>
@@ -119,13 +141,15 @@
       <div id="journalList"></div>
       <h3>POIs</h3>
       <div id="poiList"></div>
+      <h3>Reisechronik</h3>
+      <div id="chronologyList"></div>
     </section>
   </section>
 
 
   <section id="gps" class="view">
     <section class="card">
-      <h2>GPS & Tracking <span class="badge">Core 2.3</span></h2>
+      <h2>GPS & Tracking <span class="badge">Core 2.7</span></h2>
       <div id="gpsStatus" class="status">GPS bereit.</div>
       <div id="gpsDebug" class="gps-debug">Letzter Punkt: –</div>
       <div id="gpsBackgroundWarning" class="gps-warning">Hinweis: Exaktes Hintergrundtracking ist in der PWA eingeschränkt. Für genaue Aufzeichnung App im Vordergrund lassen.</div>
