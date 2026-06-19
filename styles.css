@@ -37,3 +37,11 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 .gps-debug{margin:8px 0 10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#08130d;color:var(--muted);font-size:13px;line-height:1.45}
 .gps-debug strong{color:var(--text)}
 .status.ok{color:#7df08f}.status.warn{color:#ffd27a}.status.err{color:#ffb6b6}
+
+/* Core 2.3 Camera / photo improvements */
+.gps-warning{margin:8px 0 10px;padding:10px;border:1px solid #d8aa3d88;border-radius:12px;background:#2a210c;color:#ffd27a;font-size:13px;line-height:1.45}
+.photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.photo-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.photo-preview img,.photo-grid img{width:100%;aspect-ratio:1;border-radius:10px;object-fit:cover;border:1px solid var(--line)}
+.photo-count{display:inline-block;color:var(--muted);font-size:13px;margin-top:4px}
+@media(max-width:760px){.photo-actions{grid-template-columns:1fr}.photo-preview{grid-template-columns:repeat(2,1fr)}}

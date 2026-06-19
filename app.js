@@ -284,7 +284,7 @@ async function registerSW(){if("serviceWorker"in navigator)navigator.serviceWork
 let deferredPrompt;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").hidden=false;});$("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;$("installBtn").hidden=true;}};
 window.addEventListener("resize",()=>{setTimeout(()=>{Object.values(stageMaps).forEach(m=>{try{m.invalidateSize(true)}catch(e){}});if(map)map.invalidateSize(true);},250);});
 
-/* ===== Core 2.2 GPS & Tracking ===== */
+/* ===== Core 2.3 GPS & Tracking ===== */
 let gpsWatchId=null,wakeLock=null,liveTrackLayer=null,liveMarker=null,savedTrackLayer=null,followLive=true;
 let gpsState={active:false,paused:false,startedAt:null,elapsedBeforePause:0,points:[]};
 function gpsDistanceKm(points){let sum=0;for(let i=1;i<points.length;i++)sum+=distM({lat:points[i-1].lat,lon:points[i-1].lon},{lat:points[i].lat,lon:points[i].lon})/1000;return sum;}
@@ -308,14 +308,14 @@ function drawSavedTracks(){if(!map)return;if(savedTrackLayer){try{map.removeLaye
 const oldDrawMainMap=drawMainMap;drawMainMap=function(){oldDrawMainMap();drawSavedTracks();drawLiveTrack();};
 function showTrackOnMap(id){showView("mapView");setTimeout(()=>{const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(t?.points?.length&&map)map.fitBounds(L.latLngBounds(t.points.map(p=>[p.lat,p.lon])),{padding:[30,30]});},300);}
 function deleteTrack(id){if(confirm("Track löschen?")){activeTrip.tracks=(activeTrip.tracks||[]).filter(t=>t.id!==id);save();renderGps();drawMainMap();}}
-function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.2" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
+function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.3" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
 function exportLatestGpx(){const t=(activeTrip.tracks||[]).at(-1);if(!t)return alert("Noch kein gespeicherter Track vorhanden.");exportTrackGpx(t.id);}
 const oldBindCore21=bind;bind=function(){oldBindCore21();$("gpsStartBtn").onclick=gpsStart;$("gpsPauseBtn").onclick=gpsPause;$("gpsResumeBtn").onclick=gpsResume;$("gpsFinishBtn").onclick=gpsFinish;$("gpsOpenMapBtn").onclick=()=>showView("mapView");$("gpxExportBtn").onclick=exportLatestGpx;};
 const oldRenderAllCore21=renderAll;renderAll=function(){oldRenderAllCore21();renderGps();};
 setInterval(()=>{const g=document.getElementById("gps");if(g&&g.classList.contains("active"))renderGps();},1000);
 
 
-/* ===== Core 2.2 GPS praxis/debug layer ===== */
+/* ===== Core 2.3 GPS praxis/debug layer ===== */
 let gpsLastPointCore22=null;
 function core22SetStatus(text,cls=""){const el=document.getElementById("gpsStatus");if(!el)return;el.textContent=text;el.className="status "+cls;}
 function core22DebugText(){const tracks=activeTrip?.tracks?.length||0;const active=gpsState?.active?"aktiv":(gpsState?.paused?"pausiert":"bereit");if(!gpsLastPointCore22)return `Status: <strong>${active}</strong><br>Letzter Punkt: –<br>Gespeicherte Tracks: <strong>${tracks}</strong>`;const p=gpsLastPointCore22;return `Status: <strong>${active}</strong><br>Letzter Punkt: <strong>${Number(p.lat).toFixed(6)}, ${Number(p.lon).toFixed(6)}</strong><br>Genauigkeit: <strong>±${Math.round(p.acc||0)} m</strong> · Zeit: <strong>${new Date(p.time).toLocaleTimeString("de-DE")}</strong><br>Gespeicherte Tracks: <strong>${tracks}</strong>`;}
@@ -329,5 +329,106 @@ const oldGpsPositionCore22=typeof gpsPosition==="function"?gpsPosition:null;if(o
 const oldGpsErrorCore22=typeof gpsError==="function"?gpsError:null;if(oldGpsErrorCore22){gpsError=function(err){oldGpsErrorCore22(err);core22SetStatus("GPS-Fehler: "+err.message,"err");core22RenderDebug();};}
 const oldRenderTracksCore22=typeof renderTracks==="function"?renderTracks:null;if(oldRenderTracksCore22){renderTracks=function(){oldRenderTracksCore22();core22RenderDebug();};}
 setInterval(core22RenderDebug,1500);
+
+
+/* ===== Core 2.3: camera + gallery photos for Journal and POI ===== */
+let core23PhotoTarget = null;
+
+function core23PhotoStore(){
+  try{return JSON.parse(localStorage.getItem("expedition-core2-photos") || "{}");}
+  catch(e){return {};}
+}
+function core23PhotoSave(store){
+  localStorage.setItem("expedition-core2-photos", JSON.stringify(store));
+}
+async function core23AddFilesToTarget(files){
+  if(!core23PhotoTarget || !files || !files.length) return;
+  const store = core23PhotoStore();
+  const ids = [];
+  for(const f of [...files]){
+    const data = await resizeImage(f, 1100);
+    const id = uid("photo");
+    store[id] = data;
+    ids.push(id);
+  }
+  try{ core23PhotoSave(store); }
+  catch(e){ alert("Fotos konnten nicht vollständig gespeichert werden. Vermutlich ist der lokale Speicher voll."); return; }
+
+  if(core23PhotoTarget.type === "journal"){
+    const j = activeTrip.journal.find(x => x.id === core23PhotoTarget.id);
+    if(j){ j.photoIds ||= []; j.photoIds.push(...ids); }
+  }
+  if(core23PhotoTarget.type === "poi"){
+    const p = activeTrip.pois.find(x => x.id === core23PhotoTarget.id);
+    if(p){ p.photoIds ||= []; p.photoIds.push(...ids); }
+  }
+  save();
+  renderAll();
+}
+function core23OpenCamera(type,id){
+  core23PhotoTarget = {type,id};
+  const input = type === "journal" ? $("journalCameraInput") : $("poiCameraInput");
+  if(input){ input.value = ""; input.click(); }
+}
+function core23OpenGallery(type,id){
+  core23PhotoTarget = {type,id};
+  const input = type === "journal" ? $("journalGalleryInput") : $("poiGalleryInput");
+  if(input){ input.value = ""; input.click(); }
+}
+function core23PhotoGrid(ids=[]){
+  return `<div class="photo-grid">${(ids||[]).map(id => `<img src="${getPhoto(id)||""}" loading="lazy">`).join("")}</div>`;
+}
+
+renderJournal = function(){
+  $("journalList").innerHTML = activeTrip.journal.slice().reverse().map(j=>`
+    <div class="item">
+      <strong>${esc(j.date)} · ${esc(j.title)}</strong>
+      <p>${esc(j.text||"")}</p>
+      <span class="photo-count">${(j.photoIds||[]).length} Fotos</span>
+      ${core23PhotoGrid(j.photoIds||[])}
+      <div class="photo-actions">
+        <button class="secondary" onclick="core23OpenCamera('journal','${j.id}')">Foto aufnehmen</button>
+        <button class="secondary" onclick="core23OpenGallery('journal','${j.id}')">Fotos aus Galerie</button>
+      </div>
+      <button class="danger" onclick="deleteJournal('${j.id}')">Löschen</button>
+    </div>`).join("") || "<p>Noch keine Einträge.</p>";
+
+  $("poiList").innerHTML = activeTrip.pois.map(p=>`
+    <div class="item">
+      <strong>${esc(p.name)}</strong><br>${esc(p.category)} · ${p.lat}, ${p.lon}
+      <p>${esc(p.note||"")}</p>
+      <span class="photo-count">${(p.photoIds||[]).length} Fotos</span>
+      ${core23PhotoGrid(p.photoIds||[])}
+      <div class="photo-actions">
+        <button class="secondary" onclick="core23OpenCamera('poi','${p.id}')">Foto aufnehmen</button>
+        <button class="secondary" onclick="core23OpenGallery('poi','${p.id}')">Fotos aus Galerie</button>
+      </div>
+      <button class="danger" onclick="deletePoi('${p.id}')">Löschen</button>
+    </div>`).join("") || "<p>Noch keine POIs.</p>";
+};
+
+const oldBindCore23 = typeof bind === "function" ? bind : null;
+if(oldBindCore23){
+  bind = function(){
+    oldBindCore23();
+    const pairs = [
+      ["journalCameraInput", e=>core23AddFilesToTarget(e.target.files)],
+      ["journalGalleryInput", e=>core23AddFilesToTarget(e.target.files)],
+      ["poiCameraInput", e=>core23AddFilesToTarget(e.target.files)],
+      ["poiGalleryInput", e=>core23AddFilesToTarget(e.target.files)]
+    ];
+    pairs.forEach(([id,fn])=>{
+      const el=$(id);
+      if(el && !el.__core23){ el.__core23=true; el.onchange=fn; }
+    });
+  };
+}
+setTimeout(()=>{
+  ["journalCameraInput","journalGalleryInput","poiCameraInput","poiGalleryInput"].forEach(id=>{
+    const el=$(id);
+    if(el) el.onchange=e=>core23AddFilesToTarget(e.target.files);
+  });
+  renderJournal();
+},800);
 
 init();

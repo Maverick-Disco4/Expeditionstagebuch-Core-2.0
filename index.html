@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#07150d">
-  <title>Expeditionstagebuch Core 2.2</title>
+  <title>Expeditionstagebuch Core 2.3</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -13,7 +13,7 @@
 <header>
   <button id="menuBtn" class="icon">☰</button>
   <div>
-    <h1>Expeditionstagebuch Core 2.2</h1>
+    <h1>Expeditionstagebuch Core 2.3</h1>
     <p id="subline">GPS & Expeditionskarte · Build 2026-06-09</p>
   </div>
   <button id="installBtn" hidden>Installieren</button>
@@ -109,6 +109,12 @@
         <button id="addPoiBtn" class="secondary">POI hinzufügen</button>
       </div>
       <div id="journalEditor" hidden></div>
+      <div id="photoInputsCore23" hidden>
+        <input id="journalCameraInput" type="file" accept="image/*" capture="environment">
+        <input id="journalGalleryInput" type="file" accept="image/*" multiple>
+        <input id="poiCameraInput" type="file" accept="image/*" capture="environment">
+        <input id="poiGalleryInput" type="file" accept="image/*" multiple>
+      </div>
       <h3>Journal</h3>
       <div id="journalList"></div>
       <h3>POIs</h3>
@@ -119,9 +125,10 @@
 
   <section id="gps" class="view">
     <section class="card">
-      <h2>GPS & Tracking <span class="badge">Core 2.2</span></h2>
+      <h2>GPS & Tracking <span class="badge">Core 2.3</span></h2>
       <div id="gpsStatus" class="status">GPS bereit.</div>
       <div id="gpsDebug" class="gps-debug">Letzter Punkt: –</div>
+      <div id="gpsBackgroundWarning" class="gps-warning">Hinweis: Exaktes Hintergrundtracking ist in der PWA eingeschränkt. Für genaue Aufzeichnung App im Vordergrund lassen.</div>
       <div class="gps-grid">
         <div><strong id="gpsKm">0.00 km</strong><small>aktueller Track</small></div>
         <div><strong id="gpsTime">0:00 h</strong><small>Fahrzeit</small></div>
