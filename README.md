@@ -1,4 +1,4 @@
-# Expeditionstagebuch Core 2.7
+# Expeditionstagebuch Core 2.8
 
 Neu aufgebaut, nicht als Patch.
 
@@ -21,7 +21,7 @@ Neu aufgebaut, nicht als Patch.
 ## Wichtige Designentscheidung
 Routen werden vereinfacht gespeichert. Keine vollständigen Langstrecken-Geometrien mehr im lokalen Speicher.
 
-## Core 2.7 – GPS & Tracking
+## Core 2.8 – GPS & Tracking
 - Eigene GPS-Rubrik
 - GPS starten, pausieren, fortsetzen, speichern
 - Live-Track grün auf der Expeditionskarte
@@ -30,24 +30,31 @@ Routen werden vereinfacht gespeichert. Keine vollständigen Langstrecken-Geometr
 - Wake Lock während aktivem Tracking
 - GPX-Export pro Track
 
-## Core 2.7 – GPS Praxistest
+## Core 2.8 – GPS Praxistest
 - GPS-Status klarer markiert: bereit, aktiv, pausiert, Fehler.
 - Debug-Zeile mit letztem GPS-Punkt, Genauigkeit und Zeit.
 - Track-Speicherung zeigt klar, ob gespeichert wurde.
 - Track-Zähler im GPS-Bereich.
 - Keine neuen Großmodule.
 
-## Core 2.7 – Kamera und Fotos
+## Core 2.8 – Kamera und Fotos
 - Direkte Kameraaufnahme für Journal-Einträge.
 - Direkte Kameraaufnahme für POIs.
 - Mehrfachauswahl aus Galerie für Journal und POIs.
 - Fotoanzahl und Galerieansicht verbessert.
 - Hinweis im GPS-Bereich: Hintergrundtracking ist in der PWA eingeschränkt.
 
-## Core 2.7 – Reise-Build
+## Core 2.8 – Reise-Build
 - Expeditionskarte mit Layern: geplante Route, gefahrene Tracks, POIs, Live-Position.
 - POIs direkt auf der Karte per langem Druck anlegen.
 - POI-Kategorien mit Symbolen: Camping, Kajak, Diesel, Fotospot, Restaurant, Geheimtipp.
 - Reisechronik aus Tracks, POIs, Journal, Fotos und Reisekasse.
 - Routensuche: Park4Night, Campspace, Supermarkt, Bäckerei, Tankstelle, Restaurant.
 - Kartenbuttons: Auf Position, aktive Etappe, gesamte Reise.
+
+## Core 2.8 – Planungseditor
+- Ortsnamen können per Geocoding in Koordinaten umgewandelt werden.
+- Nominatim/OpenStreetMap Suche mit bis zu 5 Treffern.
+- Bekannte Reiseorte werden zusätzlich lokal erkannt.
+- Speichern wird verhindert, wenn Start/Ziel ungültige Koordinaten haben.
+- Routing wird verhindert, wenn Koordinaten fehlen.

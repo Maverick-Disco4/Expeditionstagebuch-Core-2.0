@@ -284,7 +284,7 @@ async function registerSW(){if("serviceWorker"in navigator)navigator.serviceWork
 let deferredPrompt;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").hidden=false;});$("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;$("installBtn").hidden=true;}};
 window.addEventListener("resize",()=>{setTimeout(()=>{Object.values(stageMaps).forEach(m=>{try{m.invalidateSize(true)}catch(e){}});if(map)map.invalidateSize(true);},250);});
 
-/* ===== Core 2.7 GPS & Tracking ===== */
+/* ===== Core 2.8 GPS & Tracking ===== */
 let gpsWatchId=null,wakeLock=null,liveTrackLayer=null,liveMarker=null,savedTrackLayer=null,followLive=true;
 let gpsState={active:false,paused:false,startedAt:null,elapsedBeforePause:0,points:[]};
 function gpsDistanceKm(points){let sum=0;for(let i=1;i<points.length;i++)sum+=distM({lat:points[i-1].lat,lon:points[i-1].lon},{lat:points[i].lat,lon:points[i].lon})/1000;return sum;}
@@ -308,14 +308,14 @@ function drawSavedTracks(){if(!map)return;if(savedTrackLayer){try{map.removeLaye
 const oldDrawMainMap=drawMainMap;drawMainMap=function(){oldDrawMainMap();drawSavedTracks();drawLiveTrack();};
 function showTrackOnMap(id){showView("mapView");setTimeout(()=>{const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(t?.points?.length&&map)map.fitBounds(L.latLngBounds(t.points.map(p=>[p.lat,p.lon])),{padding:[30,30]});},300);}
 function deleteTrack(id){if(confirm("Track löschen?")){activeTrip.tracks=(activeTrip.tracks||[]).filter(t=>t.id!==id);save();renderGps();drawMainMap();}}
-function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.7" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
+function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.8" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
 function exportLatestGpx(){const t=(activeTrip.tracks||[]).at(-1);if(!t)return alert("Noch kein gespeicherter Track vorhanden.");exportTrackGpx(t.id);}
 const oldBindCore21=bind;bind=function(){oldBindCore21();$("gpsStartBtn").onclick=gpsStart;$("gpsPauseBtn").onclick=gpsPause;$("gpsResumeBtn").onclick=gpsResume;$("gpsFinishBtn").onclick=gpsFinish;$("gpsOpenMapBtn").onclick=()=>showView("mapView");$("gpxExportBtn").onclick=exportLatestGpx;};
 const oldRenderAllCore21=renderAll;renderAll=function(){oldRenderAllCore21();renderGps();};
 setInterval(()=>{const g=document.getElementById("gps");if(g&&g.classList.contains("active"))renderGps();},1000);
 
 
-/* ===== Core 2.7 GPS praxis/debug layer ===== */
+/* ===== Core 2.8 GPS praxis/debug layer ===== */
 let gpsLastPointCore22=null;
 function core22SetStatus(text,cls=""){const el=document.getElementById("gpsStatus");if(!el)return;el.textContent=text;el.className="status "+cls;}
 function core22DebugText(){const tracks=activeTrip?.tracks?.length||0;const active=gpsState?.active?"aktiv":(gpsState?.paused?"pausiert":"bereit");if(!gpsLastPointCore22)return `Status: <strong>${active}</strong><br>Letzter Punkt: –<br>Gespeicherte Tracks: <strong>${tracks}</strong>`;const p=gpsLastPointCore22;return `Status: <strong>${active}</strong><br>Letzter Punkt: <strong>${Number(p.lat).toFixed(6)}, ${Number(p.lon).toFixed(6)}</strong><br>Genauigkeit: <strong>±${Math.round(p.acc||0)} m</strong> · Zeit: <strong>${new Date(p.time).toLocaleTimeString("de-DE")}</strong><br>Gespeicherte Tracks: <strong>${tracks}</strong>`;}
@@ -331,7 +331,7 @@ const oldRenderTracksCore22=typeof renderTracks==="function"?renderTracks:null;i
 setInterval(core22RenderDebug,1500);
 
 
-/* ===== Core 2.7: camera + gallery photos for Journal and POI ===== */
+/* ===== Core 2.8: camera + gallery photos for Journal and POI ===== */
 let core23PhotoTarget = null;
 
 function core23PhotoStore(){
@@ -433,7 +433,7 @@ setTimeout(()=>{
 
 
 
-/* ===== Core 2.7: expedition map, map POIs, chronology, search links ===== */
+/* ===== Core 2.8: expedition map, map POIs, chronology, search links ===== */
 const core27Layers = {planned:true, tracks:true, pois:true, live:true};
 let core27RouteLayer = null;
 let core27PoiLayer = null;
@@ -625,5 +625,37 @@ if(oldRenderAllCore27){
   };
 }
 setTimeout(()=>{core27AttachLayerControls();renderChronology();if(map){core27InstallLongPressPoi();drawMainMap();}},1000);
+
+
+/* ===== Core 2.8: planning editor with geocoding and validation ===== */
+let core28GeoCache=JSON.parse(localStorage.getItem("expedition-core2-geocache")||"{}");
+function core28SaveGeoCache(){try{localStorage.setItem("expedition-core2-geocache",JSON.stringify(core28GeoCache));}catch(e){}}
+function core28ValidPoint(p){return !!p&&Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon))&&Math.abs(Number(p.lat))<=90&&Math.abs(Number(p.lon))<=180&&!(Number(p.lat)===0&&Number(p.lon)===0);}
+function core28SetStatus(id,msg,cls=""){const el=$(id);if(!el)return;el.textContent=msg;el.className="geo-status "+cls;}
+function core28MarkCoords(prefix){const lat=$(`${prefix}-lat`),lon=$(`${prefix}-lon`);const ok=core28ValidPoint({lat:Number(lat?.value),lon:Number(lon?.value)});[lat,lon].forEach(el=>{if(!el)return;el.classList.toggle("coord-valid",ok);el.classList.toggle("coord-invalid",!ok);});return ok;}
+async function core28Geocode(query){query=String(query||"").trim();if(!query)throw new Error("Ort fehlt");const key=query.toLowerCase();if(core28GeoCache[key])return core28GeoCache[key];const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&addressdetails=1&q=${encodeURIComponent(query)}`;const r=await fetch(url,{headers:{"Accept":"application/json"}});if(!r.ok)throw new Error("Geocoding fehlgeschlagen: "+r.status);const data=await r.json();const results=(data||[]).map(x=>({name:x.display_name,lat:Number(x.lat),lon:Number(x.lon),type:x.type||"",cls:x.class||""})).filter(x=>core28ValidPoint(x));if(!results.length)throw new Error("Keine Koordinaten gefunden");core28GeoCache[key]=results;core28SaveGeoCache();return results;}
+async function core28Lookup(prefix){const nameEl=$(`${prefix}-name`),q=nameEl?.value,statusId=`${prefix}-status`,resId=`${prefix}-results`,res=$(resId);core28SetStatus(statusId,"Suche Koordinaten …","warn");if(res)res.innerHTML="";try{const list=await core28Geocode(q);if(list.length===1){core28ApplyGeo(prefix,list[0]);}else{core28SetStatus(statusId,`${list.length} Treffer gefunden. Bitte auswählen.`,"warn");if(res)res.innerHTML=list.map((g,i)=>`<button type="button" onclick="core28ApplyGeo('${prefix}', core28GeoCache[${JSON.stringify(String(q||"").toLowerCase())}][${i}])">${esc(g.name)}</button>`).join("");}}catch(e){core28SetStatus(statusId,e.message,"err");}}
+function core28ApplyGeo(prefix,g){$(`${prefix}-name`).value=($(`${prefix}-name`).value||"").trim()||g.name.split(",")[0];$(`${prefix}-lat`).value=Number(g.lat).toFixed(6);$(`${prefix}-lon`).value=Number(g.lon).toFixed(6);const res=$(`${prefix}-results`);if(res)res.innerHTML="";core28SetStatus(`${prefix}-status`,`Koordinaten gesetzt: ${Number(g.lat).toFixed(5)}, ${Number(g.lon).toFixed(5)}`,"ok");core28MarkCoords(prefix);core28ValidateStageEditor();}
+function core28ValidateStageEditor(){const sOk=core28MarkCoords("st-start"),eOk=core28MarkCoords("st-end"),warn=$("stageEditorWarning"),saveBtn=$("stageSaveBtn");if(warn){if(sOk&&eOk){warn.textContent="Start und Ziel sind gültig. Speichern ist möglich.";warn.className="geo-status ok";}else{warn.textContent="Start und Ziel benötigen gültige Koordinaten. Nutze „Koordinaten suchen“ oder trage gültige Werte ein.";warn.className="editor-warning";}}if(saveBtn)saveBtn.disabled=!(sOk&&eOk);return sOk&&eOk;}
+function core28FallbackKnownPlace(name){const places={"bad zwischenahn":[53.183,8.000],"reims":[49.258,4.031],"morvan":[47.466,3.747],"lac des settons":[47.207,4.066],"amboise":[47.413,0.982],"dierre":[47.3497,0.9578],"chenonceau":[47.3249,1.0703],"tournon-sur-rhône":[45.067,4.833],"la croix-valmer":[43.206,6.567],"moustiers-sainte-marie":[43.846,6.221],"sainte-enimie":[44.365,3.412],"sarlat-la-canéda":[44.890,1.216],"bellême":[48.379,0.570]};const key=String(name||"").toLowerCase().trim();for(const [k,v] of Object.entries(places)){if(key.includes(k))return{name,lat:v[0],lon:v[1]};}return null;}
+
+editStage=function(id){const prev=activeTrip.stages.at(-1);const s=id?activeTrip.stages.find(x=>x.id===id):{id:uid("stage"),type:"drive",date:"",title:"Neue Etappe",start:{name:prev?.end?.name||"",lat:prev?.end?.lat||0,lon:prev?.end?.lon||0},end:{name:"",lat:0,lon:0},plannedKm:0,plannedTime:"",overnight:"",notes:"",route:null};const e=$("stageEditor");e.hidden=false;e.className="editor";e.innerHTML=`<h3>${id?"Etappe bearbeiten":"Etappe hinzufügen"}</h3>
+<div id="stageEditorWarning" class="editor-warning">Start und Ziel benötigen gültige Koordinaten.</div>
+<div class="two"><input id="st-title" value="${esc(s.title)}" placeholder="Titel"><select id="st-type"><option value="drive">Fahretappe</option><option value="stay">Aufenthalt/Rundtag</option></select></div>
+<div class="three"><input id="st-date" value="${esc(s.date)}" placeholder="Datum"><input id="st-km" type="number" value="${Number(s.plannedKm||0)}" placeholder="Plan-km"><input id="st-time" value="${esc(s.plannedTime||"")}" placeholder="Planzeit"></div>
+<label>Start</label><div class="geo-row"><input id="st-start-name" value="${esc(s.start.name)}" placeholder="Start Name"><button type="button" class="secondary" onclick="core28Lookup('st-start')">Koordinaten suchen</button></div><div id="st-start-status" class="geo-status">Startkoordinaten prüfen.</div><div id="st-start-results" class="geo-results"></div><div class="two"><input id="st-start-lat" type="number" step="0.000001" value="${Number(s.start.lat||0)}" placeholder="Start Lat"><input id="st-start-lon" type="number" step="0.000001" value="${Number(s.start.lon||0)}" placeholder="Start Lon"></div>
+<label>Ziel</label><div class="geo-row"><input id="st-end-name" value="${esc(s.end.name)}" placeholder="Ziel Name"><button type="button" class="secondary" onclick="core28Lookup('st-end')">Koordinaten suchen</button></div><div id="st-end-status" class="geo-status">Zielkoordinaten prüfen.</div><div id="st-end-results" class="geo-results"></div><div class="two"><input id="st-end-lat" type="number" step="0.000001" value="${Number(s.end.lat||0)}" placeholder="Ziel Lat"><input id="st-end-lon" type="number" step="0.000001" value="${Number(s.end.lon||0)}" placeholder="Ziel Lon"></div>
+<input id="st-overnight" value="${esc(s.overnight||"")}" placeholder="Übernachtung"><textarea id="st-notes" placeholder="Notizen">${esc(s.notes||"")}</textarea>
+<div class="action-row"><button id="stageSaveBtn" onclick="saveStage('${s.id}','${id?"update":"new"}')">Speichern</button><button class="secondary" onclick="$('stageEditor').hidden=true">Abbrechen</button></div>`;$("st-type").value=s.type;["st-start-lat","st-start-lon","st-end-lat","st-end-lon"].forEach(fid=>$(fid).addEventListener("input",core28ValidateStageEditor));["st-start-name","st-end-name"].forEach(fid=>$(fid).addEventListener("change",()=>{const prefix=fid==="st-start-name"?"st-start":"st-end";const fb=core28FallbackKnownPlace($(fid).value);if(fb)core28ApplyGeo(prefix,fb);else core28ValidateStageEditor();}));const fs=core28FallbackKnownPlace(s.start.name),fe=core28FallbackKnownPlace(s.end.name);if(!core28ValidPoint(s.start)&&fs)core28ApplyGeo("st-start",fs);if(!core28ValidPoint(s.end)&&fe)core28ApplyGeo("st-end",fe);core28ValidateStageEditor();e.scrollIntoView({behavior:"smooth",block:"start"});};
+window.editStage=editStage;
+
+saveStage=function(id,mode){if(!core28ValidateStageEditor()){alert("Speichern nicht möglich: Start und Ziel benötigen gültige Koordinaten.");return;}const s=mode==="update"?activeTrip.stages.find(x=>x.id===id):{id};if(!s){alert("Etappe nicht gefunden.");return;}Object.assign(s,{type:$("st-type").value,date:$("st-date").value,title:$("st-title").value,start:{name:$("st-start-name").value.trim(),lat:Number($("st-start-lat").value),lon:Number($("st-start-lon").value)},end:{name:$("st-end-name").value.trim(),lat:Number($("st-end-lat").value),lon:Number($("st-end-lon").value)},plannedKm:Number($("st-km").value||0),plannedTime:$("st-time").value,overnight:$("st-overnight").value,notes:$("st-notes").value,route:null});if(mode==="new")activeTrip.stages.push(s);normalizeAll();save();$("stageEditor").hidden=true;renderAll();};
+window.saveStage=saveStage;
+
+const oldBuildStageRouteCore28=typeof buildStageRoute==="function"?buildStageRoute:null;
+buildStageRoute=async function(id,force=false){const s=activeTrip.stages.find(x=>x.id===id);if(!s){alert("Etappe nicht gefunden.");return false;}if(!core28ValidPoint(s.start)||!core28ValidPoint(s.end)){alert("Route kann nicht berechnet werden: Start oder Ziel haben keine gültigen Koordinaten.");editStage(id);return false;}return oldBuildStageRouteCore28(id,force);};
+window.buildStageRoute=buildStageRoute;
+deleteStage=function(id){if(confirm("Etappe löschen?")){activeTrip.stages=activeTrip.stages.filter(s=>s.id!==id);normalizeAll();save();renderAll();}};
+window.deleteStage=deleteStage;
 
 init();

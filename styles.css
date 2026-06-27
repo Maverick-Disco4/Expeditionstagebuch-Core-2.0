@@ -57,3 +57,12 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 .chrono-day h4{margin:0 0 6px;color:var(--text)}
 .chrono-row{color:var(--muted);font-size:14px;margin:3px 0}
 @media(max-width:760px){.layer-controls,.search-grid{grid-template-columns:1fr 1fr}}
+
+/* Core 2.8 Planning editor / geocoding */
+.geo-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.geo-status{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.geo-status.ok{color:#7df08f}.geo-status.warn{color:#ffd27a}.geo-status.err{color:#ffb6b6}
+.geo-results{display:grid;gap:6px;margin:6px 0}
+.geo-results button{background:#203527;border:1px solid var(--line);text-align:left;font-weight:600}
+.coord-valid{border-color:#22b83f88!important}.coord-invalid{border-color:#dd4d4d88!important}
+.editor-warning{padding:10px;border:1px solid #d8aa3d88;border-radius:12px;background:#2a210c;color:#ffd27a;font-size:13px}
