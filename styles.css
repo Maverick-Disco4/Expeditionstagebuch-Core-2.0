@@ -66,3 +66,8 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 .geo-results button{background:#203527;border:1px solid var(--line);text-align:left;font-weight:600}
 .coord-valid{border-color:#22b83f88!important}.coord-invalid{border-color:#dd4d4d88!important}
 .editor-warning{padding:10px;border:1px solid #d8aa3d88;border-radius:12px;background:#2a210c;color:#ffd27a;font-size:13px}
+
+/* Core 3.0 storage foundation */
+.storage-status{padding:10px;border:1px solid var(--line);border-radius:12px;background:#08130d;color:var(--muted);font-size:13px;line-height:1.45}
+.storage-status strong{color:var(--text)}
+.photo-grid img[data-loading="true"]{opacity:.45}

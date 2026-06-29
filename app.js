@@ -284,7 +284,7 @@ async function registerSW(){if("serviceWorker"in navigator)navigator.serviceWork
 let deferredPrompt;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").hidden=false;});$("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;$("installBtn").hidden=true;}};
 window.addEventListener("resize",()=>{setTimeout(()=>{Object.values(stageMaps).forEach(m=>{try{m.invalidateSize(true)}catch(e){}});if(map)map.invalidateSize(true);},250);});
 
-/* ===== Core 2.8 GPS & Tracking ===== */
+/* ===== Core 3.0 GPS & Tracking ===== */
 let gpsWatchId=null,wakeLock=null,liveTrackLayer=null,liveMarker=null,savedTrackLayer=null,followLive=true;
 let gpsState={active:false,paused:false,startedAt:null,elapsedBeforePause:0,points:[]};
 function gpsDistanceKm(points){let sum=0;for(let i=1;i<points.length;i++)sum+=distM({lat:points[i-1].lat,lon:points[i-1].lon},{lat:points[i].lat,lon:points[i].lon})/1000;return sum;}
@@ -308,14 +308,14 @@ function drawSavedTracks(){if(!map)return;if(savedTrackLayer){try{map.removeLaye
 const oldDrawMainMap=drawMainMap;drawMainMap=function(){oldDrawMainMap();drawSavedTracks();drawLiveTrack();};
 function showTrackOnMap(id){showView("mapView");setTimeout(()=>{const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(t?.points?.length&&map)map.fitBounds(L.latLngBounds(t.points.map(p=>[p.lat,p.lon])),{padding:[30,30]});},300);}
 function deleteTrack(id){if(confirm("Track löschen?")){activeTrip.tracks=(activeTrip.tracks||[]).filter(t=>t.id!==id);save();renderGps();drawMainMap();}}
-function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 2.8" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
+function exportTrackGpx(id){const t=(activeTrip.tracks||[]).find(x=>x.id===id);if(!t)return;const gpx=`<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Expeditionstagebuch Core 3.0" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(t.name||"Track")}</name><trkseg>${(t.points||[]).map(p=>`<trkpt lat="${p.lat}" lon="${p.lon}"><time>${p.time||""}</time></trkpt>`).join("")}</trkseg></trk></gpx>`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));a.download=(t.name||"track").replace(/[^a-z0-9_-]+/gi,"_")+".gpx";a.click();}
 function exportLatestGpx(){const t=(activeTrip.tracks||[]).at(-1);if(!t)return alert("Noch kein gespeicherter Track vorhanden.");exportTrackGpx(t.id);}
 const oldBindCore21=bind;bind=function(){oldBindCore21();$("gpsStartBtn").onclick=gpsStart;$("gpsPauseBtn").onclick=gpsPause;$("gpsResumeBtn").onclick=gpsResume;$("gpsFinishBtn").onclick=gpsFinish;$("gpsOpenMapBtn").onclick=()=>showView("mapView");$("gpxExportBtn").onclick=exportLatestGpx;};
 const oldRenderAllCore21=renderAll;renderAll=function(){oldRenderAllCore21();renderGps();};
 setInterval(()=>{const g=document.getElementById("gps");if(g&&g.classList.contains("active"))renderGps();},1000);
 
 
-/* ===== Core 2.8 GPS praxis/debug layer ===== */
+/* ===== Core 3.0 GPS praxis/debug layer ===== */
 let gpsLastPointCore22=null;
 function core22SetStatus(text,cls=""){const el=document.getElementById("gpsStatus");if(!el)return;el.textContent=text;el.className="status "+cls;}
 function core22DebugText(){const tracks=activeTrip?.tracks?.length||0;const active=gpsState?.active?"aktiv":(gpsState?.paused?"pausiert":"bereit");if(!gpsLastPointCore22)return `Status: <strong>${active}</strong><br>Letzter Punkt: –<br>Gespeicherte Tracks: <strong>${tracks}</strong>`;const p=gpsLastPointCore22;return `Status: <strong>${active}</strong><br>Letzter Punkt: <strong>${Number(p.lat).toFixed(6)}, ${Number(p.lon).toFixed(6)}</strong><br>Genauigkeit: <strong>±${Math.round(p.acc||0)} m</strong> · Zeit: <strong>${new Date(p.time).toLocaleTimeString("de-DE")}</strong><br>Gespeicherte Tracks: <strong>${tracks}</strong>`;}
@@ -331,7 +331,7 @@ const oldRenderTracksCore22=typeof renderTracks==="function"?renderTracks:null;i
 setInterval(core22RenderDebug,1500);
 
 
-/* ===== Core 2.8: camera + gallery photos for Journal and POI ===== */
+/* ===== Core 3.0: camera + gallery photos for Journal and POI ===== */
 let core23PhotoTarget = null;
 
 function core23PhotoStore(){
@@ -433,7 +433,7 @@ setTimeout(()=>{
 
 
 
-/* ===== Core 2.8: expedition map, map POIs, chronology, search links ===== */
+/* ===== Core 3.0: expedition map, map POIs, chronology, search links ===== */
 const core27Layers = {planned:true, tracks:true, pois:true, live:true};
 let core27RouteLayer = null;
 let core27PoiLayer = null;
@@ -627,7 +627,7 @@ if(oldRenderAllCore27){
 setTimeout(()=>{core27AttachLayerControls();renderChronology();if(map){core27InstallLongPressPoi();drawMainMap();}},1000);
 
 
-/* ===== Core 2.8: planning editor with geocoding and validation ===== */
+/* ===== Core 3.0: planning editor with geocoding and validation ===== */
 let core28GeoCache=JSON.parse(localStorage.getItem("expedition-core2-geocache")||"{}");
 function core28SaveGeoCache(){try{localStorage.setItem("expedition-core2-geocache",JSON.stringify(core28GeoCache));}catch(e){}}
 function core28ValidPoint(p){return !!p&&Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon))&&Math.abs(Number(p.lat))<=90&&Math.abs(Number(p.lon))<=180&&!(Number(p.lat)===0&&Number(p.lon)===0);}
@@ -657,5 +657,142 @@ buildStageRoute=async function(id,force=false){const s=activeTrip.stages.find(x=
 window.buildStageRoute=buildStageRoute;
 deleteStage=function(id){if(confirm("Etappe löschen?")){activeTrip.stages=activeTrip.stages.filter(s=>s.id!==id);normalizeAll();save();renderAll();}};
 window.deleteStage=deleteStage;
+
+
+/* ===== Core 3.0: IndexedDB storage foundation for photos ===== */
+const CORE30_DB_NAME="expeditionstagebuch-core3";
+const CORE30_DB_VERSION=1;
+let core30DbPromise=null;
+let core30PhotoMemory={};
+let core30PhotoLoading=new Set();
+
+function core30OpenDb(){
+  if(core30DbPromise)return core30DbPromise;
+  core30DbPromise=new Promise((resolve,reject)=>{
+    const req=indexedDB.open(CORE30_DB_NAME,CORE30_DB_VERSION);
+    req.onupgradeneeded=e=>{
+      const dbx=e.target.result;
+      if(!dbx.objectStoreNames.contains("photos"))dbx.createObjectStore("photos",{keyPath:"id"});
+      if(!dbx.objectStoreNames.contains("meta"))dbx.createObjectStore("meta",{keyPath:"key"});
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return core30DbPromise;
+}
+async function core30Put(storeName,value){
+  const dbx=await core30OpenDb();
+  return new Promise((resolve,reject)=>{
+    const tx=dbx.transaction(storeName,"readwrite");
+    tx.objectStore(storeName).put(value);
+    tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
+  });
+}
+async function core30Get(storeName,key){
+  const dbx=await core30OpenDb();
+  return new Promise((resolve,reject)=>{
+    const tx=dbx.transaction(storeName,"readonly");
+    const req=tx.objectStore(storeName).get(key);
+    req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+  });
+}
+async function core30GetAll(storeName){
+  const dbx=await core30OpenDb();
+  return new Promise((resolve,reject)=>{
+    const tx=dbx.transaction(storeName,"readonly");
+    const req=tx.objectStore(storeName).getAll();
+    req.onsuccess=()=>resolve(req.result||[]); req.onerror=()=>reject(req.error);
+  });
+}
+async function core30StorePhotoData(id,data){
+  core30PhotoMemory[id]=data;
+  await core30Put("photos",{id,data,createdAt:new Date().toISOString()});
+}
+async function core30LoadPhoto(id){
+  if(core30PhotoMemory[id])return core30PhotoMemory[id];
+  if(core30PhotoLoading.has(id))return "";
+  core30PhotoLoading.add(id);
+  try{
+    const rec=await core30Get("photos",id);
+    if(rec?.data){
+      core30PhotoMemory[id]=rec.data;
+      setTimeout(renderAll,30);
+      return rec.data;
+    }
+  }catch(e){console.warn("Foto konnte nicht aus IndexedDB geladen werden",e);}
+  finally{core30PhotoLoading.delete(id);}
+  return "";
+}
+function getPhoto(id){
+  if(core30PhotoMemory[id])return core30PhotoMemory[id];
+  core30LoadPhoto(id);
+  return "";
+}
+async function storePhoto(file){
+  const data=await resizeImage(file,1100);
+  const id=uid("photo");
+  await core30StorePhotoData(id,data);
+  return{id};
+}
+async function core23AddFilesToTarget(files){
+  if(!core23PhotoTarget||!files||!files.length)return;
+  const ids=[];
+  for(const f of [...files]){
+    const data=await resizeImage(f,1100);
+    const id=uid("photo");
+    try{await core30StorePhotoData(id,data);ids.push(id);}
+    catch(e){alert("Foto konnte nicht in IndexedDB gespeichert werden: "+e.message);return;}
+  }
+  if(core23PhotoTarget.type==="journal"){
+    const j=activeTrip.journal.find(x=>x.id===core23PhotoTarget.id);
+    if(j){j.photoIds||=[];j.photoIds.push(...ids);}
+  }
+  if(core23PhotoTarget.type==="poi"){
+    const p=activeTrip.pois.find(x=>x.id===core23PhotoTarget.id);
+    if(p){p.photoIds||=[];p.photoIds.push(...ids);}
+  }
+  save(); renderAll();
+}
+async function core30MigrateLocalStoragePhotos(){
+  let migrated=0;
+  try{
+    const raw=localStorage.getItem("expedition-core2-photos");
+    if(!raw)return 0;
+    const old=JSON.parse(raw);
+    for(const [id,data] of Object.entries(old)){
+      if(data&&!core30PhotoMemory[id]){await core30StorePhotoData(id,data);migrated++;}
+    }
+    localStorage.removeItem("expedition-core2-photos");
+  }catch(e){console.warn("Migration alter Fotos fehlgeschlagen",e);}
+  return migrated;
+}
+async function core30StorageEstimate(){
+  let estimate=null;
+  try{if(navigator.storage?.estimate)estimate=await navigator.storage.estimate();}catch(e){}
+  const photos=await core30GetAll("photos").catch(()=>[]);
+  const used=estimate?.usage?(estimate.usage/1024/1024).toFixed(1)+" MB":"unbekannt";
+  const quota=estimate?.quota?(estimate.quota/1024/1024).toFixed(0)+" MB":"unbekannt";
+  return{photos:photos.length,used,quota};
+}
+async function core30RenderStorageStatus(){
+  const el=$("storageStatusCore30"); if(!el)return;
+  try{
+    await core30OpenDb();
+    const s=await core30StorageEstimate();
+    el.innerHTML=`IndexedDB aktiv.<br>Fotos gespeichert: <strong>${s.photos}</strong><br>Speicher genutzt: <strong>${s.used}</strong> / <strong>${s.quota}</strong>`;
+  }catch(e){el.innerHTML=`IndexedDB nicht verfügbar: ${esc(e.message)}`;}
+}
+const oldBindCore30=typeof bind==="function"?bind:null;
+if(oldBindCore30){
+  bind=function(){
+    oldBindCore30();
+    const mig=$("migratePhotosBtn"),ref=$("storageRefreshBtn");
+    if(mig&&!mig.__core30){mig.__core30=true;mig.onclick=async()=>{mig.disabled=true;const n=await core30MigrateLocalStoragePhotos();await core30RenderStorageStatus();mig.disabled=false;alert(n?`${n} Fotos migriert.`:"Keine alten Fotos zur Migration gefunden.");};}
+    if(ref&&!ref.__core30){ref.__core30=true;ref.onclick=core30RenderStorageStatus;}
+  };
+}
+const oldRenderAllCore30=typeof renderAll==="function"?renderAll:null;
+if(oldRenderAllCore30){renderAll=function(){oldRenderAllCore30();core30RenderStorageStatus();};}
+setTimeout(async()=>{await core30OpenDb().catch(()=>{});await core30MigrateLocalStoragePhotos();await core30RenderStorageStatus();renderAll();},800);
 
 init();
