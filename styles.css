@@ -71,3 +71,11 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 .storage-status{padding:10px;border:1px solid var(--line);border-radius:12px;background:#08130d;color:var(--muted);font-size:13px;line-height:1.45}
 .storage-status strong{color:var(--text)}
 .photo-grid img[data-loading="true"]{opacity:.45}
+
+/* Core 3.1 planning/routing/minimap fix */
+.route-mode-box{padding:10px;border:1px solid var(--line);border-radius:12px;background:#08130d}
+.route-mode-box label{display:block;margin:8px 0;color:var(--muted)}
+.geo-results button{cursor:pointer}
+button:disabled{opacity:.45;filter:grayscale(1)}
+.route-mode-note{margin-top:4px}
+.mini-map{min-height:250px}

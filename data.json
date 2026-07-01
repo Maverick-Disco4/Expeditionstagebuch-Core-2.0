@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "appName": "Expeditionstagebuch Core 3.0",
+  "appName": "Expeditionstagebuch Core 3.1",
   "activeTripId": "frankreich-2026",
   "settings": {
     "routeMode": "osrm",
@@ -34,7 +34,8 @@
           "plannedTime": "8:45 h",
           "overnight": "Lac des Settons / Morvan",
           "notes": "Lange Anreise, erster Frankreich-Abend.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s02",
@@ -55,7 +56,8 @@
           "plannedTime": "4:30 h",
           "overnight": "Loire / Cher bei Amboise",
           "notes": "Loire-Ankunft und Schlösserbasis.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s03",
@@ -76,7 +78,8 @@
           "plannedTime": "3:00 h",
           "overnight": "Amboise / Bléré",
           "notes": "Schlösser, Loiretal und Kajakoption.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s04",
@@ -97,7 +100,8 @@
           "plannedTime": "6:30 h",
           "overnight": "Tournon / Rhône",
           "notes": "Verbindungsetappe nach Süden.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s05",
@@ -118,7 +122,8 @@
           "plannedTime": "5:00 h",
           "overnight": "Ferienwohnung",
           "notes": "Ankunft Ferienwohnung.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s06",
@@ -139,7 +144,8 @@
           "plannedTime": "–",
           "overnight": "Ferienwohnung",
           "notes": "Strand, Küste, Tagesausflüge, Kajak.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s07",
@@ -160,7 +166,8 @@
           "plannedTime": "3:30 h",
           "overnight": "Moustiers / Lac de Sainte-Croix",
           "notes": "Provence-Stopp.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s08",
@@ -181,7 +188,8 @@
           "plannedTime": "6:45 h",
           "overnight": "Lac Chambon / Murol",
           "notes": "Vulkanland und See.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s09",
@@ -202,7 +210,8 @@
           "plannedTime": "4:15 h",
           "overnight": "Gorges du Tarn",
           "notes": "Schlucht und Kajak.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s10",
@@ -223,7 +232,8 @@
           "plannedTime": "4:00 h",
           "overnight": "Lot / Bouziès",
           "notes": "Lot-Tal.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s11",
@@ -244,7 +254,8 @@
           "plannedTime": "2:30 h",
           "overnight": "Dordogne / Sarlat",
           "notes": "Burgen und Dordogne-Kajak.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s12",
@@ -265,7 +276,8 @@
           "plannedTime": "7:00 h",
           "overnight": "Perche / Bellême",
           "notes": "Richtung Norden.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         },
         {
           "id": "s13",
@@ -286,7 +298,8 @@
           "plannedTime": "7:45 h",
           "overnight": "Zuhause",
           "notes": "Heimfahrt.",
-          "route": null
+          "route": null,
+          "routeMode": "inherit"
         }
       ],
       "pois": [],
