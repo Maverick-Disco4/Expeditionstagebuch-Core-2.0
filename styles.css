@@ -72,10 +72,17 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#07110cf2;backdrop-filter:
 .storage-status strong{color:var(--text)}
 .photo-grid img[data-loading="true"]{opacity:.45}
 
-/* Core 3.1 planning/routing/minimap fix */
+/* Core 3.2 planning replacement */
+.stage-editor-core32{display:grid;gap:10px}
 .route-mode-box{padding:10px;border:1px solid var(--line);border-radius:12px;background:#08130d}
 .route-mode-box label{display:block;margin:8px 0;color:var(--muted)}
-.geo-results button{cursor:pointer}
-button:disabled{opacity:.45;filter:grayscale(1)}
-.route-mode-note{margin-top:4px}
-.mini-map{min-height:250px}
+.geo-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.geo-status{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.geo-status.ok{color:#7df08f}.geo-status.warn{color:#ffd27a}.geo-status.err{color:#ffb6b6}
+.geo-results{display:grid;gap:6px;margin:6px 0}
+.geo-results button{background:#203527;border:1px solid var(--line);text-align:left;font-weight:700;cursor:pointer}
+.coord-valid{border-color:#22b83f88!important}.coord-invalid{border-color:#dd4d4d88!important}
+.editor-warning{padding:10px;border:1px solid #d8aa3d88;border-radius:12px;background:#2a210c;color:#ffd27a;font-size:13px}
+.editor-warning.ok{border-color:#22b83f88;background:#0b2412;color:#7df08f}
+.stage-route-line{margin-top:5px}
+.mini-map{height:260px!important;min-height:260px!important;background:#06100a!important}
